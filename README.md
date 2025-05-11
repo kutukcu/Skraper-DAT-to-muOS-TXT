@@ -14,6 +14,6 @@ All Done! Press the Menu button in muOS to view your game descriptions!
 
 Need Help?: If you have any questions, reach out on  [Reddit thread.](https://reddit.com)
 
-> This service works offline and does not store any files or information. The conversion is done in your browser; no server is used. You can download this page using CTRL + S or CMD + S to use it offline.
+> Conversation works offline and does not store any files or information. The conversion is done in your browser; no server is used. You can download this page using CTRL + S or CMD + S to use it offline.
 
 *This website is not affiliated with muOS / MustardOS or Skraper.*
