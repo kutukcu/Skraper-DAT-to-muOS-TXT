@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skraper DAT to muOS TXT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Genel Stil Ayarları */
+        body {
+            font-family: 'Nunito', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .description {
+            font-size: 1rem;
+            text-align: center;
+            color: #777;
+            margin-bottom: 1rem;
+            padding: 0 1rem;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        /* Kart Stili */
+        .card {
+            background-color: #fff;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Sürükle-Bırak Alanı */
+        .drop-zone {
+            border: 2px dashed #ccc;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            border-radius: 0.75rem;
+            color: #555;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .drop-zone.dragover {
+            background-color: #e6f0fa;
+            border-color: #1e88e5;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Dosya Listesi */
+        .file-list {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 0.75rem;
+            border: 1px solid #eee;
+            background-color: #fff;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .file-item i {
+            color: #ffffff;
+        }
+
+        .file-item button {
+        background-color: #ffffff;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+        margin-left: auto;
+        border: 1px solid #d32f2f;
+        }
+
+        .file-item button:hover {
+            transform: scale(1.05);
+        }
+
+        /* İşlem Butonu */
+        .process-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 1.8rem;
+            background-color: #1e88e5;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin: 1.5rem auto;
+            width: fit-content;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .process-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Sonuçlar */
+        .result-item {
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #eee;
+            margin-bottom: 1rem;
+            background-color: #fff;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-item a {
+            color: #1e88e5;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+
+        a {
+           color: #C7AF26;
+        }
+
+        .result-item a:hover {
+            text-decoration: underline;
+            color: #1565c0;
+        }
+
+        .all-outputs {
+            background-color: #e8f5e9;
+            border: 2px solid #c8e6c9;
+            font-weight: bold;
+        }
+
+        #status {
+            margin-top: 1.5rem;
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.25rem;
+            text-align: center;
+        }
+
+        .download-all-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background-color: #4caf50;
+            color: #fff;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .download-all-btn:hover {
+            background-color: #388e3c;
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .reset-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        color: #757575;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .reset-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .collapsible {
+            background: none;
+            color: #757575;
+            cursor: pointer;
+            padding: 0.75rem;
+            width: auto;
+            border: none;
+            text-align: center;
+            outline: none;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            margin: auto;
+            transition: background 0.3s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .collapsible:hover {
+            transform: scale(1.05);
+        }
+
+        .collapsible i {
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.active{
+            background: #ececec;
+            margin-bottom: 1rem;
+            
+        }
+
+        .collapsible-content {
+            display: flex;
+            height: 0;
+            overflow: hidden;
+            background-color: #fafafa;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
+            transition: all ease .5s;
+            opacity: 0;
+        }
+
+        .collapsible-content.active {
+            height: auto; 
+            opacity: 1;
+        }
+
+        .how-to-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+        }
+
+        .how-to-content h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .how-to-content p {
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .how-to-content ol {
+            padding-left: 1.5rem;
+            color: #555;
+        }
+
+        .how-to-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .how-to-content {
+            padding: 1rem 1.5rem;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="margin-top: 3rem;">Skraper DAT to muOS TXT</h1>
+        <p class="description">
+            This tool converts game description data from Skraper DAT files into TXT files compatible with muOS, making it easy to display game details in the muOS interface.
+        </p>
+
+        
+        <button class="collapsible"><i class="fa-solid fa-circle-question"></i>Help</button>
+        <div class="collapsible-content">
+            <div class="how-to-content">
+                <div>
+                <p><b>1. Download Game Metadata:</b> Use <a href="skraper.net">Skraper</a> to download game descriptions for your ROMs. Optionally, adjust description settings in the METADATA tab if needed. If you need help with using Skraper, you may watch <a href="https://youtu.be/g1sjR6IX9Eo?si=loOJREWHkQtJjOil&t=510" >Retro Game Corps Video</a>. Already downloaded the game visuals before? You don't need this step, you most probably have .DAT files, you can skip to step 2.</p>
+                <p><b>2. Select DAT Files:</b> Check sdcard/ROMS path to see your system folders. Locate the DAT files saved by Skraper in each system folder (e.g., Nintendo 64.dat, Sega Game Gear.dat, PSP.dat). Drag and drop these files into the area below. You can select multiple files at once.</p>
+                <p><b>3. Start Conversion:</b> Click the process button to convert your files. Your game descriptions will be generated as TXT files, packaged in ZIP archives, ready for download in seconds.</p>
+                <p><b>4. Transfer TXT Files:</b> Extract the TXT files from the ZIP and move them to the appropriate muOS directory for each system: MUOS -> info -> catalogue -> [System Folder] -> text.</p>
+                <p>All Done! Press the Menu button in muOS to view your game descriptions!</p>
+                <p>Need Help?: If you have any questions, reach out on <a href="https://reddit.com">Reddit thread.</a></p>
+                
+
+                <p><i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i>This service works online and does not store any files or information. The conversion is done in your browser; no server is used. You can download this page using CTRL + S or CMD + S to use it offline.</p>
+
+                <p style="font-size: .8rem">This website is not affiliated with muOS / MustardOS or Skraper.</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="reset-btn" onclick="resetPage()">
+            <i class="fas fa-undo"  style="margin-right: 4px;"></i> Reset
+        </button>
+
+        <div class="card">
+            <div class="drop-zone" id="dropZone">
+                <i class="fas fa-cloud-upload-alt fa-3x" style="margin-bottom: .5rem;"></i><br>
+                Drag and drop your .DAT files here or click. <br>Multiple files are supported.<br>
+                <input type="file" id="datFiles" accept=".dat,.xml" multiple class="file-input">
+            </div>
+            <div class="file-list" id="fileList"></div>
+        </div>
+        <button class="process-btn" onclick="processFiles()">
+            <i class="fas fa-arrows-rotate" style="margin-right: 8px"></i> Convert Files
+        </button>
+        <div id="results"></div>
+        <div id="status"></div>
+
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('datFiles');
+        const fileList = document.getElementById('fileList');
+        const results = document.getElementById('results');
+        const status = document.getElementById('status');
+        let files = [];
+        let zipBlobs = [];
+
+        // Drag-and-drop ve tıklama olayları
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+        function handleFiles(newFiles) {
+            files = [...files, ...newFiles];
+            updateFileList();
+        }
+
+        function updateFileList() {
+            fileList.innerHTML = '';
+            files.forEach((file, index) => {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                    <i class="fas fa-file"></i> ${file.name}
+                    <button onclick="removeFile(${index})"><i class="fas fa-close" style="color:#d32f2f"></i></button>
+                `;
+                fileList.appendChild(div);
+            });
+        }
+
+        function removeFile(index) {
+            files.splice(index, 1);
+            updateFileList();
+        }
+
+        async function processFiles() {
+            if (files.length === 0) {
+                status.textContent = 'Please select at least one DAT file.';
+                return;
+            }
+
+            status.textContent = 'Processing files...';
+            results.innerHTML = '';
+            zipBlobs = [];
+            let mainZip = new JSZip();
+
+            // Önce All Outputs için işlemleri yap
+            for (const file of files) {
+                try {
+                    const text = await file.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(text, 'text/xml');
+                    const games = xmlDoc.getElementsByTagName('game');
+
+                    for (const game of games) {
+                        const gameName = game.getAttribute('name');
+                        const description = game.getElementsByTagName('description')[0]?.textContent || '';
+                        const year = game.getElementsByTagName('year')[0]?.textContent || '';
+                        const manufacturer = game.getElementsByTagName('manufacturer')[0]?.textContent || '';
+                        const rom = game.getElementsByTagName('rom')[0]?.getAttribute('name') || '';
+
+                        const romName = rom.replace(/\.[^/.]+$/, '');
+                        const textContent = `${gameName}\n\n${description}\n\n${year}\n${manufacturer}`;
+
+                        // All Outputs'a TXT'leri ekle
+                        const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
+                        mainZip.file(`${fileNameWithoutExtension}/text/${romName}.txt`, textContent);
+                    }
+                } catch (error) {
+                    status.textContent += `\nError processing ${file.name}: ${error.message}`;
+                }
+            }
+
+            // All Outputs'u oluştur ve indirilebilir yap
+            let mainBlobUrl = null;
+            if (files.length > 1) {
+                const mainZipContent = await mainZip.generateAsync({ type: 'blob' });
+                mainBlobUrl = URL.createObjectURL(mainZipContent);
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-item all-outputs';
+                resultDiv.innerHTML = `
+                    <strong>All Outputs</strong> 
+                    <a href="${mainBlobUrl}" download="All_DAT_Outputs.zip"><i class="fas fa-file-download"></i> Download All (All_DAT_Outputs.zip)</a>
+                `;
+                results.appendChild(resultDiv);
+            }
+
+            // Şimdi tekil zip'leri oluştur
+            for (const file of files) {
+                try {
+                    const text = await file.text();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(text, 'text/xml');
+                    const games = xmlDoc.getElementsByTagName('game');
+                    const fileZip = new JSZip();
+
+                    for (const game of games) {
+                        const gameName = game.getAttribute('name');
+                        const description = game.getElementsByTagName('description')[0]?.textContent || '';
+                        const year = game.getElementsByTagName('year')[0]?.textContent || '';
+                        const manufacturer = game.getElementsByTagName('manufacturer')[0]?.textContent || '';
+                        const rom = game.getElementsByTagName('rom')[0]?.getAttribute('name') || '';
+
+                        const romName = rom.replace(/\.[^/.]+$/, '');
+                        const textContent = `${gameName}\n\n${description}\n\n${year}\n${manufacturer}`;
+                        fileZip.file(`text/${romName}.txt`, textContent);
+                    }
+
+                    const zipContent = await fileZip.generateAsync({ type: 'blob' });
+                    const zipName = file.name.replace(/\.[^/.]+$/, '') + '.zip';
+                    const blobUrl = URL.createObjectURL(zipContent);
+
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'result-item';
+                    resultDiv.innerHTML = `
+                        <strong>${file.name}</strong> 
+                        <a href="${blobUrl}" download="${zipName}"><i class="fas fa-file-download"></i> Download (${zipName})</a>
+                    `;
+                    results.appendChild(resultDiv);
+
+                    zipBlobs.push({ name: zipName, blob: zipContent });
+
+                } catch (error) {
+                    status.textContent += `\nError processing ${file.name}: ${error.message}`;
+                }
+            }
+
+            status.textContent = 'Processing complete! Click the links to download.';
+        }
+
+        function resetPage() {
+            files = [];
+            zipBlobs = [];
+            fileList.innerHTML = '';
+            results.innerHTML = '';
+            status.textContent = '';
+            fileInput.value = '';
+            // Reset collapsible state
+            collapsibleContent.classList.remove('active');
+            collapsible.classList.remove('active');
+        }
+
+        // Collapsible functionality
+        const collapsible = document.querySelector('.collapsible');
+        const collapsibleContent = document.querySelector('.collapsible-content');
+
+        collapsible.addEventListener('click', () => {
+            const isActive = collapsibleContent.classList.toggle('active');
+            collapsible.classList.toggle('active', isActive);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93d84e3b88997ba2',t:'MTc0Njg2ODI0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+
+</html>
