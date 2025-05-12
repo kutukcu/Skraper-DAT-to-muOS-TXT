@@ -1,5 +1,9 @@
 # Skraper DAT to muOS TXT
 
+
+**Go to Converter:** **https://kutukcu.github.io/Skraper-DAT-to-muOS-TXT/**
+
+
 This tool converts game description data from Skraper DAT files into TXT files compatible with muOS, making it easy to display game details in the muOS interface.
 
 **1. Download Game Metadata:**  Use  [Skraper](skraper.net)  to download game descriptions for your ROMs. Optionally, adjust description settings in the METADATA tab if needed. If you need help with using Skraper, you may watch  [Retro Game Corps Video](https://youtu.be/g1sjR6IX9Eo?si=loOJREWHkQtJjOil&t=510). Already downloaded the game visuals before? You don't need this step, you most probably have .DAT files, you can skip to step 2.
@@ -14,6 +18,6 @@ All Done! Press the Menu button in muOS to view your game descriptions!
 
 Need Help?: If you have any questions, reach out on  [Reddit thread.](https://reddit.com)
 
-> Conversation works offline and does not store any files or information. The conversion is done in your browser; no server is used. You can download this page using CTRL + S or CMD + S to use it offline.
+> This service works offline and does not store any files or information. The conversion is done in your browser; no server is used. You can download this page using CTRL + S or CMD + S to use it offline.
 
 *This website is not affiliated with muOS / MustardOS or Skraper.*
